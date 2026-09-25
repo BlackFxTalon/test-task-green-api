@@ -142,6 +142,18 @@ describe('receiveNotification', () => {
     await expect(receiveNotification(credentials, 5)).resolves.toBeNull()
   })
 
+  it('MAX v3: пустое тело при отсутствии уведомлений → null, без исключения', async () => {
+    stubFetch(
+      () =>
+        new Response('', {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+    )
+
+    await expect(receiveNotification(credentials, 5)).resolves.toBeNull()
+  })
+
   it('receiveTimeout передаётся в query', async () => {
     stubFetch((url) => {
       expect(url.searchParams.get('receiveTimeout')).toBe('5')

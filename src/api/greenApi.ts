@@ -159,7 +159,14 @@ async function request<T>(
     )
   }
 
-  return (await response.json()) as T
+  // MAX v3: при отсутствии уведомлений сервер отдаёт HTTP 200 с пустым телом
+  // (проверено на тестовом инстансе), а не null — трактуем как «данных нет».
+  const text = await response.text()
+  if (text.trim() === '') {
+    return null as T
+  }
+
+  return JSON.parse(text) as T
 }
 
 // ---------- Методы API ----------
@@ -187,7 +194,8 @@ export function sendMessage(
 }
 
 /**
- * Долгий опрос уведомлений. Возвращает `null`, если уведомлений нет.
+ * Долгий опрос уведомлений. Возвращает `null`, если уведомлений нет
+ * (в том числе когда сервер ответил пустым телом).
  * `receiveTimeoutSeconds` — сколько сервер держит запрос при отсутствии уведомлений.
  */
 export function receiveNotification(
