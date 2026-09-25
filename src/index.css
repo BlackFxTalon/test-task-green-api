@@ -1,4 +1,19 @@
-/* Базовые стили: сброс и корневой слой. Тематика web.max.ru появится в задаче 5.4. */
+/* Базовые стили и переменные под палитру MAX (см. design.md: обычный CSS). */
+
+:root {
+  --bg: #f5f6f8;
+  --panel: #ffffff;
+  --border: #e3e4e8;
+  --text: #1c1d21;
+  --text-muted: #7a7d85;
+  --accent: #7c5cff;
+  --accent-hover: #6a4af0;
+  --error: #e0342c;
+  --error-bg: #fdeceb;
+  --warning: #9a6700;
+  --warning-bg: #fff3d6;
+  --radius: 12px;
+}
 
 *,
 *::before,
@@ -9,17 +24,178 @@
 body {
   margin: 0;
   font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
-  color: #1c1d21;
-  background: #f5f6f8;
+  font-size: 15px;
+  color: var(--text);
+  background: var(--bg);
 }
 
-#root,
-.app-root {
+#root {
   min-height: 100vh;
 }
 
-.app-root {
+/* ---------- Экран входа ---------- */
+
+.login-root {
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 24px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.login-title {
+  margin: 0;
+  font-size: 22px;
+  text-align: center;
+}
+
+.login-subtitle {
+  margin: 0;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.field-label {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.field-input {
+  font: inherit;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel);
+  transition: border-color 0.15s ease;
+}
+
+.field-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.field-input_invalid {
+  border-color: var(--error);
+}
+
+.field-error {
+  font-size: 12px;
+  color: var(--error);
+}
+
+.banner {
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.banner_error {
+  color: var(--error);
+  background: var(--error-bg);
+}
+
+.banner_warning {
+  color: var(--warning);
+  background: var(--warning-bg);
+}
+
+.submit-button {
+  font: inherit;
+  font-weight: 600;
+  padding: 11px;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  background: var(--accent);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.submit-button:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.submit-button:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.login-hint {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.login-hint a {
+  color: var(--accent);
+}
+
+/* ---------- Экран чата (каркас) ---------- */
+
+.chat-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+}
+
+.chat-brand {
+  font-weight: 700;
+  font-size: 17px;
+}
+
+.chat-instance {
+  color: var(--text-muted);
+  font-size: 13px;
+  flex: 1;
+}
+
+.logout-button {
+  font: inherit;
+  padding: 7px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel);
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.chat-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
 }
