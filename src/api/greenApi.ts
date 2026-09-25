@@ -23,6 +23,17 @@ export function buildChatId(phone: string): string {
   return `${phone}${CHAT_ID_SUFFIX}`
 }
 
+/**
+ * Нормализует ввод номера: убирает разделители (пробелы, дефисы, скобки,
+ * ведущий «+») и проверяет, что осталось 10–15 цифр.
+ * Возвращает нормализованный номер или null, если формат неверный.
+ */
+export function normalizePhone(input: string): string | null {
+  const digits = input.replace(/[\s+()-]/g, '')
+  if (!/^\d{10,15}$/.test(digits)) return null
+  return digits
+}
+
 // ---------- Типы ответов ----------
 
 /** Ответ getSettings (используются ключевые поля). */
@@ -80,6 +91,14 @@ export interface ReceiveNotificationResponse {
 /** Ответ deleteNotification. */
 export interface DeleteNotificationResponse {
   result: boolean
+}
+
+/** Ответ checkAccount — проверка номера и резолв канонического chatId MAX. */
+export interface CheckAccountResponse {
+  /** true — аккаунт с таким номером существует в MAX. */
+  exist: boolean
+  /** Канонический chatId (внутренний числовой ID MAX). */
+  chatId: string
 }
 
 // ---------- Ошибки ----------
@@ -216,5 +235,20 @@ export function deleteNotification(
   return request(credentials, 'deleteNotification', {
     httpMethod: 'DELETE',
     pathSuffix: String(receiptId),
+  })
+}
+
+/**
+ * Проверка номера и резолв канонического chatId MAX (см. design.md:
+ * входящие ссылаются на чаты внутренним числовым ID, а не `@c.us`).
+ */
+export function checkAccount(
+  credentials: GreenApiCredentials,
+  phoneNumber: string,
+): Promise<CheckAccountResponse> {
+  return request(credentials, 'checkAccount', {
+    httpMethod: 'POST',
+    // API ждёт число (доки v3); 15 цифр безопасно помещаются в Number
+    body: { phoneNumber: Number(phoneNumber) },
   })
 }

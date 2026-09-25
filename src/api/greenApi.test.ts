@@ -4,9 +4,11 @@ import {
   GREEN_API_BASE_URL,
   GreenApiError,
   buildChatId,
+  checkAccount,
   deleteNotification,
   getSettings,
   getStateInstance,
+  normalizePhone,
   receiveNotification,
   sendMessage,
   type GreenApiCredentials,
@@ -44,6 +46,49 @@ describe('константы', () => {
     expect(GREEN_API_BASE_URL).toBe('https://api.green-api.com')
     expect(CHAT_ID_SUFFIX).toBe('@c.us')
     expect(buildChatId('79001234567')).toBe('79001234567@c.us')
+  })
+
+  it('normalizePhone: принимает 10–15 цифр, чистит разделители', () => {
+    expect(normalizePhone('79991234567')).toBe('79991234567')
+    expect(normalizePhone('+7 (999) 123-45-67')).toBe('79991234567')
+    expect(normalizePhone('7999123456')).toBe('7999123456')
+    expect(normalizePhone('8 099 123 456 789')).toBe('8099123456789')
+  })
+
+  it('normalizePhone: отклоняет буквы, короткие и длинные номера', () => {
+    expect(normalizePhone('abc')).toBeNull()
+    expect(normalizePhone('7999123456abc')).toBeNull()
+    expect(normalizePhone('7999123456')).not.toBeNull()
+    expect(normalizePhone('799912345')).toBeNull() // 9 цифр
+    expect(normalizePhone('7999123456789012')).toBeNull() // 16 цифр
+    expect(normalizePhone('')).toBeNull()
+  })
+})
+
+describe('checkAccount', () => {
+  it('успех: POST с phoneNumber, возвращает канонический chatId', async () => {
+    const fetchMock = stubFetch((url, init) => {
+      expect(url.pathname).toBe('/waInstance1101234567/checkAccount/test-token')
+      expect(init.method).toBe('POST')
+      expect(JSON.parse(String(init.body))).toEqual({ phoneNumber: 79001234567 })
+      return jsonResponse(200, { exist: true, chatId: '92545382' })
+    })
+
+    await expect(checkAccount(credentials, '79001234567')).resolves.toEqual({
+      exist: true,
+      chatId: '92545382',
+    })
+    expect(fetchMock).toHaveBeenCalledOnce()
+  })
+
+  it('сетевая ошибка приводится к GreenApiError', async () => {
+    stubFetch(() => {
+      throw new TypeError('Failed to fetch')
+    })
+
+    await expect(checkAccount(credentials, '79001234567')).rejects.toMatchObject({
+      isNetworkError: true,
+    })
   })
 })
 
