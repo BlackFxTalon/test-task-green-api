@@ -1,0 +1,11 @@
+# OpenSpec (планирование) и скиллы/промпты pi
+.pi/
+openspec/
+
+# Зависимости и сборка
+node_modules/
+dist/
+
+# Прочее
+*.local
+.DS_Store

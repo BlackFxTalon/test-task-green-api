@@ -1,0 +1,25 @@
+/* Базовые стили: сброс и корневой слой. Тематика web.max.ru появится в задаче 5.4. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  color: #1c1d21;
+  background: #f5f6f8;
+}
+
+#root,
+.app-root {
+  min-height: 100vh;
+}
+
+.app-root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
